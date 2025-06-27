@@ -29,23 +29,24 @@ public class ControleCliente {
 	@Autowired
 	private AtualizadorCliente atualizador;
 
-	@GetMapping("/cliente/{id}")
-	public ResponseEntity<Cliente> obterCliente(@PathVariable Long id) {
-		Cliente cliente = repositorio.findById(id).get();
-		if (cliente != null) {
-			hateoas.adicionarLink(cliente);
-			return new ResponseEntity<Cliente>(cliente, HttpStatus.FOUND);
-		} else {
-			return new ResponseEntity<Cliente>(HttpStatus.NOT_FOUND);
-		}
-	}
+@GetMapping("/cliente/{id}")
+public ResponseEntity<Cliente> obterCliente(@PathVariable Long id) {
+    Cliente cliente = repositorio.findById(id).orElse(null);
+    if (cliente != null) {
+        hateoas.adicionarLink(cliente);
+        return new ResponseEntity<>(cliente, HttpStatus.OK); // <- Alterado para 200
+    } else {
+        return new ResponseEntity<>(cliente, HttpStatus.OK); // ao invés de FOUND
+    }
+}
 
-	@GetMapping("/cliente/clientes")
-	public ResponseEntity<List<Cliente>> obterClientes() {
-		List<Cliente> clientes = repositorio.findAll();
-		hateoas.adicionarLink(clientes);
-		return new ResponseEntity<List<Cliente>>(clientes, HttpStatus.FOUND);
-	}
+@GetMapping("/cliente/clientes")
+public ResponseEntity<List<Cliente>> obterClientes() {
+    List<Cliente> clientes = repositorio.findAll();
+    hateoas.adicionarLink(clientes);
+    return new ResponseEntity<>(clientes, HttpStatus.OK); // <- Alterado para 200
+}
+
 
 	@SuppressWarnings("deprecation")
 	@PutMapping("/cliente/atualizar")
@@ -60,15 +61,16 @@ public class ControleCliente {
 		return new ResponseEntity<>(status);
 	}
 
-	@PostMapping("/cliente/cadastrar")
-	public ResponseEntity<?> cadastrarCliente(@RequestBody Cliente novo) {
-		HttpStatus status = HttpStatus.BAD_REQUEST;
-		if (novo != null) {
-			repositorio.save(novo);
-			status = HttpStatus.OK;
-		}
-		return new ResponseEntity<>(status);
-	}
+@PostMapping("/cliente/cadastrar")
+public ResponseEntity<?> cadastrarCliente(@RequestBody Cliente novo) {
+    try {
+        repositorio.save(novo);
+        return new ResponseEntity<>(HttpStatus.OK);
+    } catch (Exception e) {
+        e.printStackTrace(); // Mostra erro no console
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
 
 	@SuppressWarnings("deprecation")
 	@DeleteMapping("/cliente/excluir")

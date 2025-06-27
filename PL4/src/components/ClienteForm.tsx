@@ -11,7 +11,7 @@ export interface Endereco {
 }
 
 export interface Telefone {
-  id: number;
+  id?: number; // Corrigido: id agora é opcional
   ddd: string;
   numero: string;
 }
@@ -44,10 +44,9 @@ const ClienteForm: React.FC<Props> = ({ clienteExistente, onSubmit }) => {
       codigoPostal: "",
       informacoesAdicionais: "",
     },
-    telefones: [{ id: 1, ddd: "", numero: "" }],
+    telefones: [{ ddd: "", numero: "" }],
   });
 
-  // Carrega cliente existente no formulário (modo edição)
   useEffect(() => {
     if (clienteExistente) {
       setCliente(clienteExistente);
@@ -83,10 +82,7 @@ const ClienteForm: React.FC<Props> = ({ clienteExistente, onSubmit }) => {
   const adicionarTelefone = () => {
     setCliente((prev) => ({
       ...prev,
-      telefones: [
-        ...prev.telefones,
-        { id: prev.telefones.length + 1, ddd: "", numero: "" },
-      ],
+      telefones: [...prev.telefones, { ddd: "", numero: "" }],
     }));
   };
 
@@ -98,7 +94,17 @@ const ClienteForm: React.FC<Props> = ({ clienteExistente, onSubmit }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(cliente);
+
+    // Limpa os dados antes de enviar
+    const clienteLimpo: Cliente = {
+      nome: cliente.nome,
+      nomeSocial: cliente.nomeSocial,
+      email: cliente.email,
+      endereco: { ...cliente.endereco },
+      telefones: cliente.telefones.map(({ ddd, numero }) => ({ ddd, numero }))
+    };
+
+    onSubmit(clienteLimpo);
   };
 
   return (

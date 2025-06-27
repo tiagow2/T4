@@ -1,25 +1,23 @@
-export interface Telefone {
-  id?: number;
-  numero: string;
-  ddd: string;
-}
-
 export interface Endereco {
-  id?: number;
-  estado: string;
-  cidade: string;
   bairro: string;
+  cidade: string;
+  estado: string;
   rua: string;
   numero: string;
   codigoPostal: string;
   informacoesAdicionais?: string;
 }
 
+export interface Telefone {
+  ddd: string;
+  numero: string;
+}
+
 export interface Cliente {
   id?: number;
   nome: string;
   nomeSocial: string;
-  email: string;
-  endereco: Endereco;
-  telefones: Telefone[];
+  email?: string;
+  endereco?: Endereco;
+  telefones?: Telefone[];
 }

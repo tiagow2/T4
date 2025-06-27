@@ -5,9 +5,21 @@ import { Cliente } from "../types/Cliente";
 export default function ClienteLista() {
   const [clientes, setClientes] = useState<Cliente[]>([]);
 
-  const carregarClientes = () => {
-    listarClientes().then((res) => setClientes(res.data));
-  };
+ const carregarClientes = () => {
+  listarClientes()
+    .then((res) => {
+      setClientes(res.data);
+    })
+    .catch((error) => {
+      if (error.response && error.response.status === 302) {
+        console.warn("Redirecionamento 302 tratado.");
+        setClientes(error.response.data); // ou [] se não vier nada
+      } else {
+        console.error("Erro ao carregar clientes:", error);
+      }
+    });
+};
+
 
   const handleExcluir = (id: number | undefined) => {
     if (id && window.confirm("Deseja excluir o cliente?")) {
